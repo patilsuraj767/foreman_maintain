@@ -51,4 +51,7 @@ module ForemanMaintain
 
   class HammerConfigurationError < StandardError
   end
+
+  class RepoConfigSyntaxError < StandardError
+  end
 end

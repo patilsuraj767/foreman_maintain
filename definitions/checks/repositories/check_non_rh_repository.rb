@@ -16,9 +16,11 @@ module Checks::Repositories
     end
 
     def epel_enabled?
-      cmd = "grep -ir --no-filename --include=\*.repo -E 'baseurl|metalink' /etc/yum.repos.d/"
-      system_repos = execute(cmd)
-      system_repos.to_s.match(/\bepel\b/i)
+      repositories = yum_repos.select do |repo|
+        repo['Repo_id'].include?('epel') || repo['baseurl'].include?('epel') \
+        && repo['enabled'] == '1'
+      end
+      !repositories.empty?
     end
   end
 end

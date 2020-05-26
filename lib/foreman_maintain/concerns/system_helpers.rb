@@ -184,6 +184,56 @@ module ForemanMaintain
         ForemanMaintain.package_manager
       end
 
+      def yum_repos
+        yum_repo_dir = '/etc/yum.repos.d'
+        repositories = Dir.entries(yum_repo_dir).map do |repo_file|
+          yum_repo_parser(yum_repo_dir + '/' + repo_file) if repo_file.end_with? '.repo'
+        end.compact
+        @yum_repos ||= repositories.flatten
+      end
+
+      def read_yum_file(repo_file)
+        lines = File.open(repo_file).readlines.map do |line|
+          line.chomp if !line.start_with?('#') && !line.chomp.empty?
+        end.compact
+        no_section_header = "Yum repo file #{repo_file} contains no section headers."
+        raise(RepoConfigSyntaxError, no_section_header) unless yum_repo_header?(lines[0])
+
+        lines
+      end
+
+      # rubocop:disable Metrics/MethodLength
+      def yum_repo_parser(repo_file)
+        repositories = []
+        lines = read_yum_file(repo_file)
+        repo = {}
+        lines.each_with_index do |line, index|
+          if yum_repo_header?(line)
+            repo = { 'Repo_id' => line[1..-2] }
+          else
+            parsing_error = "Parsing errors for file #{repo_file}"
+            raise(RepoConfigSyntaxError, parsing_error) unless line.include? '='
+
+            param = line.split('=', 2)
+            repo.merge!({ param[0].strip => param[1].strip })
+          end
+          next_line = lines[index + 1]
+          if yum_repo_block_end?(next_line)
+            repositories << repo
+          end
+        end
+        repositories
+      end
+      # rubocop:enable Metrics/MethodLength
+
+      def yum_repo_header?(line)
+        line.start_with?('[') && line.end_with?(']')
+      end
+
+      def yum_repo_block_end?(next_line)
+        !next_line || yum_repo_header?(next_line)
+      end
+
       private
 
       def check_version(name)

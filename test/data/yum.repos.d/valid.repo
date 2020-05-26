@@ -1,0 +1,9 @@
+[repo-1]
+enabled = 1
+name=Dummy Repo 1 
+baseurl=http://dummyrepo1.com
+
+[repo-2]
+enabled = 2
+name=Dummy Repo 2 
+baseurl=http://dummyrepo2.com

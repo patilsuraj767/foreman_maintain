@@ -1,0 +1,7 @@
+
+invalid-text
+
+[repo-1]
+enabled = 1
+name=Dummy Repo 1 
+baseurl=http://dummyrepo1.com
