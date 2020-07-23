@@ -11,6 +11,7 @@ require 'foreman_maintain/cli/restore_command'
 require 'foreman_maintain/cli/maintenance_mode_command'
 require 'foreman_maintain/cli/packages_command'
 require 'foreman_maintain/cli/content_command'
+require 'foreman_maintain/cli/prep_upgrade_command'
 
 module ForemanMaintain
   module Cli
@@ -27,6 +28,7 @@ module ForemanMaintain
       subcommand 'content', 'Content related commands', ContentCommand
       subcommand 'maintenance-mode', 'Control maintenance-mode for application',
                  MaintenanceModeCommand
+      subcommand 'prep-7.0-upgrade', 'Perpare for migrate', PrepUpgradeCommand
 
       def run(*arguments)
         logger.info("Running foreman-maintain command with arguments #{arguments.inspect}")
